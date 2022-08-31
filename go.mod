@@ -11,6 +11,7 @@ require (
 	github.com/sirupsen/logrus v1.8.1
 	github.com/spf13/viper v1.10.1
 	github.com/tuotoo/qrcode v0.0.0-20190222102259-ac9c44189bf2
+	golang.org/x/mobile v0.0.0-20190719004257-d2bd2a29d028
 )
 
 require (
