@@ -47,10 +47,12 @@ func main() {
 	}
 	//bot.SaveToken() // 存储快速登录使用的 Token, 如需使用快捷登录请解除本条注释
 
+	bot.SaveToken()
 	// 刷新好友列表，群列表
 	bot.RefreshList()
 
 	ch := make(chan os.Signal, 1)
+
 	signal.Notify(ch, os.Interrupt)
 	<-ch
 	bot.Stop()

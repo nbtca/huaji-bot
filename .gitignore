@@ -2,6 +2,8 @@
 
 application.yaml
 device.json
+session.token
+
 logs/
 
 config.json

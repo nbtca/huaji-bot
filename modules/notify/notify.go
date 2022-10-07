@@ -68,6 +68,7 @@ func (n *Notify) EventCreate(req *models.EventActionNotifyRequest, res *models.E
 	for _, group := range groups {
 		n.bot.SendGroupMessage(int64(group), msg)
 	}
+	log.Println("EventCreate", req)
 	res.Success = true
 	return nil
 }
