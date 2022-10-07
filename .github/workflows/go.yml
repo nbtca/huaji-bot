@@ -1,0 +1,42 @@
+name: Go
+
+on:
+  push:
+    branches: ["main"]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: 1.18
+
+      - name: Build
+        run: go build -v .
+
+      - name: ssh deploy
+        uses: easingthemes/ssh-deploy@v2.2.11
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.ACCESS_TOKEN }}
+          ARGS: "-avz --delete --exclude='config.json device.json application.yaml'"
+          REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
+          REMOTE_USER: ${{ secrets.REMOTE_USER }}
+          TARGET: "/home/ubuntu/weekend/huaji-bot"
+
+      # - name: ssh pipelines
+      #   uses: cross-the-world/ssh-pipeline@master
+      #   env:
+      #     WELCOME: "ssh pipeline"
+      #   with:
+      #     host: ${{ secrets.REMOTE_HOST }}
+      #     user: ${{ secrets.REMOTE_USER }}
+      #     key: ${{ secrets.ACCESS_TOKEN }}
+      #     connect_timeout: 10s
+      #     script: |
+      #       cd /home/ubuntu/weekend/saturday-production
+      #       export GIN_MODE=release
+      #       nohup /home/ubuntu/weekend/saturday-production/saturday&
