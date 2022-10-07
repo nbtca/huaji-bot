@@ -1,6 +1,7 @@
 package notify
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"net/rpc"
@@ -9,6 +10,7 @@ import (
 	"github.com/Logiase/MiraiGo-Template/bot"
 	"github.com/Logiase/MiraiGo-Template/models"
 	"github.com/Mrs4s/MiraiGo/message"
+	"github.com/spf13/viper"
 )
 
 var instance *Notify
@@ -50,21 +52,22 @@ func (n *Notify) Stop(b *bot.Bot, wg *sync.WaitGroup) {
 }
 
 func (n *Notify) EventCreate(req *models.EventActionNotifyRequest, res *models.EventActionNotifyResponse) error {
+	groups := viper.GetIntSlice("notifyGroup")
+	// content := fmt.Sprintf(`<?xml version="1.0" encoding="utf-8"?> <msg templateID="12345" action="web" brief="new event" serviceID="1" url="http://repair.nbtca.space">
+	// 		<item layout="0">
+	// 			<title>%v</title>
+	// 			<summary>问题描述: %v</summary>
+	// 			<summary>型号: %v</summary>
+	// 		</item>
+	// 	</msg>`, req.Subject, req.Problem, req.Model)
+	// msg := message.NewSendingMessage().
+	// 	Append(message.NewRichXml(content, 0))
+	req.Link = "https://repair.nbtca.space"
 	msg := message.NewSendingMessage().
-		Append(&message.TextElement{
-			Content: req.Subject + "\n",
-		}).
-		Append(&message.TextElement{
-			Content: "问题描述: " + req.Problem + "\n",
-		}).
-		Append(&message.TextElement{
-			Content: "型号: " + req.Model + "\n",
-		}).
-		Append(&message.TextElement{
-			Content: req.Link + "\n",
-		}).
-		Append(message.AtAll())
-	n.bot.SendGroupMessage(915582432, msg)
+		Append(message.NewText(fmt.Sprintf("新事件: %v\n问题描述: %v\n型号: %v\n时间: %v\n链接: %v", req.Subject, req.Problem, req.Model, req.GmtCreate, req.Link)))
+	for _, group := range groups {
+		n.bot.SendGroupMessage(int64(group), msg)
+	}
 	res.Success = true
 	return nil
 }
@@ -72,7 +75,9 @@ func (n *Notify) EventCreate(req *models.EventActionNotifyRequest, res *models.E
 func (n *Notify) StartRPC() {
 	rpc.Register(n)
 	rpc.HandleHTTP()
-	err := http.ListenAndServe(":8000", nil)
+	port := viper.GetString("rpcPort")
+	log.Println("StartRPC", port)
+	err := http.ListenAndServe(":"+port, nil)
 	if err != nil {
 		log.Fatal(err)
 	}

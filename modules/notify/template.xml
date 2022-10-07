@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<msg templateID="12345" action="web" brief="TEST" serviceID="1" url="http://repair.nbtca.space">
+  <item layout="0">
+    <title>%v</title>
+    <summary>问题描述: %v</summary>
+    <summary>型号: %v</summary>
+  </item>
+</msg>
