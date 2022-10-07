@@ -2,6 +2,7 @@
 
 application.yaml
 device.json
+session.token
 
 logs/
 
