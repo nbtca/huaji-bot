@@ -1,4 +1,0 @@
-bot:
-  login-method: "qrcode" # qrcode/common
-  account: ""
-  password: ""
