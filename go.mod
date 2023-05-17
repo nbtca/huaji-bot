@@ -8,7 +8,7 @@ require (
 	github.com/lestrrat-go/file-rotatelogs v2.4.0+incompatible
 	github.com/pkg/errors v0.9.1
 	github.com/rifflock/lfshook v0.0.0-20180920164130-b9218ef580f5
-	github.com/sirupsen/logrus v1.9.0
+	github.com/sirupsen/logrus v1.9.1
 	github.com/spf13/viper v1.15.0
 	github.com/tuotoo/qrcode v0.0.0-20220425170535-52ccc2bebf5d
 	golang.org/x/mobile v0.0.0-20190719004257-d2bd2a29d028
