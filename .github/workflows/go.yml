@@ -4,39 +4,48 @@ on:
   push:
     branches: ["main"]
 
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: huaji-bot
+  IMAGE_NAME_FULL: ghcr.io/nbtca/huaji-bot
+  
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+
     steps:
-      - uses: actions/checkout@v3
+    - name: Login DockerHub
+      uses: docker/login-action@v2
+      with:
+        registry: ${{ env.REGISTRY }}
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}   
 
-      - name: Set up Go
-        uses: actions/setup-go@v3
-        with:
-          go-version: 1.18
+    - name: Build and Push to DockerHub
+      uses: docker/build-push-action@v3
+      with:
+        context: .
+        file: ./Dockerfile
+        no-cache: true
+        # target: deploy
+        push: true
+        platforms: linux/amd64
+        tags: |
+          ${{ env.IMAGE_NAME_FULL }}:latest
 
-      - name: Build
-        run: go build -v .
-
-      - name: ssh deploy
-        uses: easingthemes/ssh-deploy@v2.2.11
-        env:
-          SSH_PRIVATE_KEY: ${{ secrets.ACCESS_TOKEN }}
-          ARGS: "-avz --delete --exclude='config.json device.json application.yaml'"
-          REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
-          REMOTE_USER: ${{ secrets.REMOTE_USER }}
-          TARGET: "/home/ubuntu/weekend/huaji-bot"
-
-      # - name: ssh pipelines
-      #   uses: cross-the-world/ssh-pipeline@master
-      #   env:
-      #     WELCOME: "ssh pipeline"
-      #   with:
-      #     host: ${{ secrets.REMOTE_HOST }}
-      #     user: ${{ secrets.REMOTE_USER }}
-      #     key: ${{ secrets.ACCESS_TOKEN }}
-      #     connect_timeout: 10s
-      #     script: |
-      #       cd /home/ubuntu/weekend/saturday-production
-      #       export GIN_MODE=release
-      #       nohup /home/ubuntu/weekend/saturday-production/saturday&
+    - name: ssh pipelines
+      uses: cross-the-world/ssh-pipeline@master
+      with:
+        host: ${{ secrets.REMOTE_HOST }}
+        user: ${{ secrets.REMOTE_USER }}
+        key: ${{ secrets.ACCESS_TOKEN }}
+        connect_timeout: 10s
+        script: |
+          cd /home/nbtca/weekend/bot
+          docker-compose stop && docker-compose rm -f
+          docker rmi ${{ env.IMAGE_NAME_FULL }}
+          docker-compose up -d

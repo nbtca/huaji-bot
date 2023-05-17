@@ -41,7 +41,7 @@ func main() {
 	bot.UseProtocol(bot.AndroidPhone)
 
 	// 登录
-	err := bot.Login()
+	err = bot.Login()
 	if err != nil {
 		panic(err)
 	}
