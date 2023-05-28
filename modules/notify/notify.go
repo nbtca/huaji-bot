@@ -51,20 +51,23 @@ func (n *Notify) Stop(b *bot.Bot, wg *sync.WaitGroup) {
 	defer wg.Done()
 }
 
-func (n *Notify) EventCreate(req *models.EventActionNotifyRequest, res *models.EventActionNotifyResponse) error {
+func (n *Notify) EventActionNotify(req *models.EventActionNotifyRequest, res *models.EventActionNotifyResponse) error {
 	groups := viper.GetIntSlice("notifyGroup")
-	// content := fmt.Sprintf(`<?xml version="1.0" encoding="utf-8"?> <msg templateID="12345" action="web" brief="new event" serviceID="1" url="http://repair.nbtca.space">
-	// 		<item layout="0">
-	// 			<title>%v</title>
-	// 			<summary>问题描述: %v</summary>
-	// 			<summary>型号: %v</summary>
-	// 		</item>
-	// 	</msg>`, req.Subject, req.Problem, req.Model)
-	// msg := message.NewSendingMessage().
-	// 	Append(message.NewRichXml(content, 0))
 	req.Link = "https://repair.nbtca.space"
-	msg := message.NewSendingMessage().
-		Append(message.NewText(fmt.Sprintf("新事件: %v\n问题描述: %v\n型号: %v\n时间: %v\n链接: %v", req.Subject, req.Problem, req.Model, req.GmtCreate, req.Link)))
+	msg := message.NewSendingMessage()
+	if req.ActorAlias != "" {
+		msg.Append(message.NewText(fmt.Sprintf("%v(%v)\n", req.Subject, req.ActorAlias)))
+	} else {
+		msg.Append(message.NewText(fmt.Sprintf("%v\n", req.Subject)))
+	}
+	if req.Problem != "" {
+		msg.Append(message.NewText(fmt.Sprintf("问题: %v\n", req.Model)))
+	}
+	if req.Model != "" {
+		msg.Append(message.NewText(fmt.Sprintf("型号: %v\n", req.Model)))
+	}
+	msg.Append(message.NewText(fmt.Sprintf("%v", req.Link)))
+
 	for _, group := range groups {
 		n.bot.SendGroupMessage(int64(group), msg)
 	}

@@ -1,0 +1,12 @@
+version: '3'
+services:
+  server:
+    image: ghcr.io/nbtca/huaji-bot
+    ports:
+      - 8000:8000
+    volumes:
+      - ./application.yaml:/app/application.yaml
+      - ./config.json:/app/config.json
+      - ./device.json:/app/device.json
+      - ./session.token:/app/session.token
+    network_mode: "host"
