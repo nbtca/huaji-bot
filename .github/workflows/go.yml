@@ -28,8 +28,6 @@ jobs:
     - name: Build and Push to DockerHub
       uses: docker/build-push-action@v3
       with:
-        context: .
-        file: ./Dockerfile
         push: true
         platforms: linux/amd64
         tags: |
