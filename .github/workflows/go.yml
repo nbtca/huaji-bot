@@ -30,8 +30,6 @@ jobs:
       with:
         context: .
         file: ./Dockerfile
-        no-cache: true
-        # target: deploy
         push: true
         platforms: linux/amd64
         tags: |

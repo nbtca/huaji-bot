@@ -1,10 +1,12 @@
 package Logging
 
 import (
+	"fmt"
 	"sync"
 
 	"github.com/Mrs4s/MiraiGo/client"
 	"github.com/Mrs4s/MiraiGo/message"
+	"github.com/spf13/viper"
 
 	"github.com/Logiase/MiraiGo-Template/bot"
 	"github.com/Logiase/MiraiGo-Template/utils"
@@ -160,6 +162,11 @@ func registerLog(b *bot.Bot) {
 	//})
 
 	b.DisconnectedEvent.Subscribe(func(qqClient *client.QQClient, event *client.ClientDisconnectedEvent) {
+		// push notification
+		keys := viper.GetStringSlice("warnGroup")
+		for _, pushKey := range keys {
+			go utils.CallPushDeer(pushKey, fmt.Sprintf("bot disconnected: %s", event.Message))
+		}
 		logDisconnect(event)
 	})
 	//b.OnDisconnected(func(qqClient *client.QQClient, event *client.ClientDisconnectedEvent) {

@@ -11,7 +11,7 @@ RUN CGO_ENABLED=0 \
     GOARCH=amd64 \
     go build -o MiraiGo .
 
-FROM debian:buster as runner
+FROM alpine:latest as deploy
 
 WORKDIR /app
 
