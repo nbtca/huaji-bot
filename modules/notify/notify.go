@@ -61,7 +61,7 @@ func (n *Notify) EventActionNotify(req *models.EventActionNotifyRequest, res *mo
 		msg.Append(message.NewText(fmt.Sprintf("%v\n", req.Subject)))
 	}
 	if req.Problem != "" {
-		msg.Append(message.NewText(fmt.Sprintf("问题: %v\n", req.Model)))
+		msg.Append(message.NewText(fmt.Sprintf("问题: %v\n", req.Problem)))
 	}
 	if req.Model != "" {
 		msg.Append(message.NewText(fmt.Sprintf("型号: %v\n", req.Model)))
